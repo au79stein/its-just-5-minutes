@@ -1,0 +1,35 @@
+controller:
+  admin:
+    existingSecret: jenkins-admin-secret
+    userKey: jenkins-admin-user
+    passwordKey: jenkins-admin-password
+
+  persistence:
+    enabled: true
+    existingClaim: jenkins-pvc
+
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hostName: localhost
+    rules:
+      - http:
+          paths:
+            - path: /jenkins
+              pathType: Prefix
+
+  jenkinsUrl: http://localhost:8000/jenkins
+
+  additionalPlugins:
+    - credentials
+    - postgres
+
+  installPlugins:
+    - kubernetes
+    - workflow-job
+    - workflow-aggregator
+    - job-dsl
+
+agent:
+  namespace: default
+

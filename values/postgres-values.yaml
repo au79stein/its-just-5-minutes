@@ -1,0 +1,18 @@
+auth:
+  username: jenkins
+  password: mysecretpassword
+  database: jenkins_db
+  existingSecret: postgres-secret
+
+primary:
+  persistence:
+    existingClaim: postgres-pvc
+    mountPath: /bitnami/postgresql
+
+  initdb:
+    scripts:
+      init.sql: |
+        CREATE TABLE IF NOT EXISTS jenkins_log (
+          id SERIAL PRIMARY KEY,
+          executed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
