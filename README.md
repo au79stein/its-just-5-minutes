@@ -84,3 +84,24 @@ You can do 'surgery' and mess with the docker containers and network and maybe g
 but I don't have the attention span.  It is just easier to destroy and recreate with different ports.
 
 
+## Project Layout
+
+```
+.
+├── README.md
+├── create_cluster.sh
+├── jobs
+│   └── dsl.groovy
+├── manifests
+│   ├── configmap-init.sql.yaml
+│   ├── ingress-jenkins.yaml
+│   ├── jenkins-secret.yaml
+│   ├── postgres-secret.yaml
+│   ├── pv-jenkins.yaml
+│   └── pv-postgres.yaml
+└── values
+    ├── jenkins-values.yaml
+    └── postgres-values.yaml
+
+3 directories, 11 files
+```
