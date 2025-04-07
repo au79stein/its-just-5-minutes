@@ -84,6 +84,51 @@ You can do 'surgery' and mess with the docker containers and network and maybe g
 but I don't have the attention span.  It is just easier to destroy and recreate with different ports.
 
 
+### Jenkins
+
+```controller:
+  installPlugins:
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
+    - credentials-binding:latest
+    - blueocean:latest
+  adminUser: true
+  admin:
+    user: admin
+    password: admin123
+
+  persistence:
+    enabled: true
+    existingClaim: jenkins-pvc
+
+  serviceType: ClusterIP
+
+  JCasC:
+    configScripts:
+      kubernetesAgents: |
+        jenkins:
+          clouds:
+            - kubernetes:
+                name: "kubernetes"
+                namespace: "shared-workers"
+                jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
+                containerTemplates:
+                  - name: "jnlp"
+                    image: "jenkins/inbound-agent:latest"
+                    ttyEnabled: true
+                    args: ""
+                    resourceRequestCpu: "100m"
+                    resourceRequestMemory: "128Mi"
+                    resourceLimitCpu: "200m"
+                    resourceLimitMemory: "256Mi"
+
+agent:
+  enabled: false
+```
+
+
 ## Project Layout
 
 ```
