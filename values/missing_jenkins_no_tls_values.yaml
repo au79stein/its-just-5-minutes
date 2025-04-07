@@ -1,0 +1,58 @@
+controller:
+  # Jenkins settings
+  installPlugins:
+    - kubernetes:1.29.7
+    - workflow-aggregator:2.7
+    - job-dsl:1.77
+
+  # Jenkins persistence
+  persistence:
+    enabled: true
+    storageClass: manual
+    size: 10Gi
+    existingClaim: jenkins-pvc
+
+  # Enable the ingress controller
+  ingress:
+    enabled: true
+    annotations:
+      # Traefik annotations (no TLS here for local dev)
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    hosts:
+      - host: jenkins.local  # Modify this with your local or desired domain for Jenkins
+        paths:
+          - /
+    tls: []  # No TLS configuration for local dev
+
+  # Configure Jenkins for Kubernetes agent pods
+  agent:
+    enabled: true
+    label: "kubernetes"
+    podTemplate:
+      containers:
+        - name: jnlp
+          image: jenkins/inbound-agent:latest
+          args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
+          resourceRequestCpu: "500m"
+          resourceRequestMemory: "1Gi"
+          resourceLimitCpu: "2"
+          resourceLimitMemory: "2Gi"
+      volumes:
+        - name: workspace-volume
+          emptyDir: {}
+
+  # Jenkins system settings (JCasC)
+  jenkinsJavaOpts: "-Djenkins.install.runSetupWizard=false"
+  envFromSecrets:
+    - name: postgres-password
+      namespace: postgres
+
+  # JCasC Configuration - Point to a ConfigMap or a Volume containing your Jenkins configuration (e.g., job DSL script)
+  jenkinsConfigurationAsCode:
+    configScripts:
+      jobDslScript: /var/jenkins_home/casc/job-dsl.groovy
+    volumeMounts:
+      - name: jenkins-casc-volume
+        mountPath: /var/jenkins_home/casc
+        subPath: job-dsl.groovy
+
