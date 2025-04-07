@@ -86,6 +86,21 @@ but I don't have the attention span.  It is just easier to destroy and recreate 
 
 ### Jenkins
 
+Use combination oa helm config and JCasC as a way to automatically launch the groovy dsl job
+
+Jenkins will need credentials to write to postgres database
+
+Postgres database table is created on launch using sql.init as a configmap
+
+This will:
+- Installs Jenkins in HA mode (technically multiple agents, though controller is still single pod)
+
+- Mounts the persistent volume via jenkins-pvc
+
+- Configures Kubernetes plugin to use the shared-workers namespace for agents
+
+- Enables basic admin user setup
+
 ```controller:
   installPlugins:
     - kubernetes:latest
